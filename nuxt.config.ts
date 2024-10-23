@@ -9,6 +9,11 @@ export default defineNuxtConfig({
   },
   future: { compatibilityVersion: 4 },
   compatibilityDate: "2024-07-30",
+  nitro: {
+    experimental: {
+      tasks: true,
+    },
+  },
   hub: {
     database: true,
   },
