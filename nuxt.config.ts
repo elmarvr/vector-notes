@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ["@nuxthub/core", "@nuxt/eslint"],
+  modules: ["@nuxthub/core", "@nuxt/eslint", "@nuxtjs/tailwindcss"],
   devtools: { enabled: true },
   runtimeConfig: {
     public: {
