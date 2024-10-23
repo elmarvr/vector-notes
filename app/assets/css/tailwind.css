@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-background: theme(colors.zinc.900);
+    --color-foreground: theme(colors.zinc.100);
+
+    --color-card: theme(colors.zinc.800);
+    --color-card-foreground: theme(colors.zinc.100);
+
+    --color-muted: theme(colors.zinc.700);
+    --color-muted-foreground: theme(colors.zinc.600);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+}

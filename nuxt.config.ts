@@ -1,7 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ["@nuxthub/core", "@nuxt/eslint", "@nuxtjs/tailwindcss"],
+  modules: [
+    "@nuxthub/core",
+    "@nuxt/eslint",
+    "@nuxtjs/tailwindcss",
+    "@nuxtjs/google-fonts",
+  ],
   devtools: { enabled: true },
+
   runtimeConfig: {
     public: {
       helloText: "Hello from the Edge 👋",
@@ -19,5 +25,10 @@ export default defineNuxtConfig({
   },
   eslint: {
     config: {},
+  },
+  googleFonts: {
+    families: {
+      Inconsolata: true,
+    },
   },
 });
