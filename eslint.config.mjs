@@ -7,8 +7,14 @@ export default withNuxt({
     "@stylistic/semi": ["error", "always"],
     "@stylistic/arrow-parens": ["error", "always"],
     "@stylistic/comma-dangle": ["error", "only-multiline"],
+    "@typescript-eslint/no-empty-object-type": ["off"],
     "@typescript-eslint/no-explicit-any": ["off"],
     "vue/singleline-html-element-content-newline": ["off"],
+    "vue/comma-dangle": ["error", "only-multiline"],
+    "@stylistic/member-delimiter-style": [
+      "error",
+      { multiline: { delimiter: "semi" } },
+    ],
   },
 }).overrideRules({
   "vue/max-attributes-per-line": ["warn", { singleline: 3 }],

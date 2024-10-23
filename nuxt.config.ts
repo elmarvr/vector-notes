@@ -6,7 +6,18 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@nuxtjs/google-fonts",
     "@nuxt/icon",
+    "@vueuse/nuxt",
+    "radix-vue/nuxt",
   ],
+
+  components: [
+    "~/components",
+    {
+      path: "~/components/ui",
+      prefix: "Ui",
+    },
+  ],
+
   devtools: { enabled: true },
 
   runtimeConfig: {
@@ -31,5 +42,8 @@ export default defineNuxtConfig({
     families: {
       Inconsolata: true,
     },
+  },
+  radix: {
+    prefix: "Radix",
   },
 });
