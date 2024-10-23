@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     "@nuxt/eslint",
     "@nuxtjs/tailwindcss",
     "@nuxtjs/google-fonts",
+    "@nuxt/icon",
   ],
   devtools: { enabled: true },
 
