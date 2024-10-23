@@ -11,6 +11,7 @@ export default withNuxt({
     "@typescript-eslint/no-explicit-any": ["off"],
     "vue/singleline-html-element-content-newline": ["off"],
     "vue/comma-dangle": ["error", "only-multiline"],
+    "vue/html-self-closing": ["off"],
     "@stylistic/member-delimiter-style": [
       "error",
       { multiline: { delimiter: "semi" } },

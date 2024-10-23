@@ -1,18 +1,17 @@
-import { type InferOutput, type ObjectSchema, parse } from "valibot";
-import type { Reactive } from "vue";
+import type { z } from "zod";
 
-export function useSearch<TSchema extends ObjectSchema<any, any>>(
+export function useSearch<TSchema extends z.ZodObject<any>>(
   schema: TSchema
-): Reactive<InferOutput<TSchema>> {
+): TSchema["_output"] {
   const router = useRouter();
   const route = useRoute();
 
-  const query = reactive(parse(schema, route.query));
+  const query = reactive(schema.parse(route.query));
 
   watch(
     () => route.query,
     (value) => {
-      Object.assign(query, parse(schema, value));
+      Object.assign(query, schema.parse(value));
     },
     {
       deep: true,

@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import * as v from "valibot";
+import { z } from "zod";
+import { useForm } from "~/composables/use-form";
 
 const search = useSearch(
-  v.object({
-    modal: v.optional(v.string()),
+  z.object({
+    modal: z.optional(z.string()),
   })
 );
 
@@ -14,6 +15,12 @@ const { data } = await useSuperjson("/api/notes", {
     };
   },
 });
+
+const form = useForm(
+  z.object({
+    content: z.string(),
+  })
+);
 </script>
 
 <template>
@@ -39,7 +46,15 @@ const { data } = await useSuperjson("/api/notes", {
       :open="!!search.modal"
       @update:open="(open) => !open && (search.modal = undefined)"
     >
-      <UiDialogContent> Test </UiDialogContent>
+      <UiDialogContent>
+        <form.Field v-slot="{ field }" name="content">
+          <input v-bind="field" />
+
+          <pre>
+            {{ JSON.stringify(form.values, null, 2) }}
+          </pre>
+        </form.Field>
+      </UiDialogContent>
     </UiDialog>
   </div>
 </template>
