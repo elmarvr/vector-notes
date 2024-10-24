@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type HTMLAttributes } from "vue";
+import type { HTMLAttributes } from "vue";
 import {
   useForwardPropsEmits,
   type DialogContentEmits,
@@ -16,13 +16,9 @@ const props = defineProps<
 >();
 const emit = defineEmits<DialogContentEmits>();
 
-const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props;
+const contentProps = reactiveOmit(props, ["class"]);
 
-  return delegated;
-});
-
-const forwarded = useForwardPropsEmits(delegatedProps, emit);
+const forwarded = useForwardPropsEmits(contentProps, emit);
 </script>
 
 <template>
@@ -32,15 +28,15 @@ const forwarded = useForwardPropsEmits(delegatedProps, emit);
       v-bind="forwarded"
       :class="
         cx(
-          'fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background rounded w-full max-w-xl p-6',
+          'fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded w-full max-w-xl p-6',
           props.class
         )
       "
     >
       <slot />
 
-      <RadixDialogClose class="">
-        <Icon name="ph:x" class="size-4 absolute top-4 right-4" />
+      <RadixDialogClose class="size-4 absolute top-4 right-4">
+        <Icon name="ph:x" />
         <span class="sr-only">Close</span>
       </RadixDialogClose>
     </RadixDialogContent>

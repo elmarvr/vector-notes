@@ -10,13 +10,23 @@
     --color-card: theme(colors.zinc.800);
     --color-card-foreground: theme(colors.zinc.100);
 
+    --color-primary: theme(colors.green.600);
+    --color-primary-foreground: theme(colors.zinc.100);
+
     --color-muted: theme(colors.zinc.700);
     --color-muted-foreground: theme(colors.zinc.600);
+
+    --color-border: theme(colors.zinc.700);
+    --color-input: theme(colors.zinc.600);
   }
 }
 
 @layer base {
   body {
     @apply bg-background text-foreground font-body;
+  }
+
+  * {
+    @apply antialiased border-border;
   }
 }

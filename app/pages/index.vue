@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { z } from "zod";
-import { useForm } from "~/composables/use-form";
 
 const search = useSearch(
   z.object({
@@ -16,11 +15,16 @@ const { data } = await useSuperjson("/api/notes", {
   },
 });
 
-const form = useForm(
+const [form, { Field }] = useForm(
   z.object({
-    content: z.string(),
+    title: z.string().min(3),
+    content: z.string().min(3),
   })
 );
+
+const onSubmit = form.handleSubmit(async (values) => {
+  console.log(values);
+});
 </script>
 
 <template>
@@ -47,13 +51,29 @@ const form = useForm(
       @update:open="(open) => !open && (search.modal = undefined)"
     >
       <UiDialogContent>
-        <form.Field v-slot="{ field }" name="content">
-          <input v-bind="field" />
+        <form class="space-y-5" @submit="onSubmit">
+          <Field v-slot="{ field }" name="title">
+            <div class="space-y-2">
+              <UiLabel> Title </UiLabel>
+              <UiInput v-bind="field" class="w-full" />
+              <FormError />
+            </div>
+          </Field>
+          <Field v-slot="{ field }" name="content">
+            <div class="space-y-2">
+              <UiLabel> Content </UiLabel>
+              <UiTextarea v-bind="field" class="w-full" />
+              <FormError />
+            </div>
+          </Field>
 
-          <pre>
-            {{ JSON.stringify(form.values, null, 2) }}
-          </pre>
-        </form.Field>
+          <UiDialogFooter>
+            <UiDialogClose>
+              <UiButton variant="ghost"> Cancel </UiButton>
+            </UiDialogClose>
+            <UiButton>Create</UiButton>
+          </UiDialogFooter>
+        </form>
       </UiDialogContent>
     </UiDialog>
   </div>
