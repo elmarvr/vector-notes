@@ -46,4 +46,7 @@ export default defineNuxtConfig({
   radix: {
     prefix: "Radix",
   },
+  build: {
+    transpile: ["trpc-nuxt"],
+  },
 });

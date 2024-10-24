@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import { z } from "zod";
 
+const trpc = useTrpc();
+
+const { mutate: createNote } = trpc.notes.create.useMutation();
+const { data: notes } = trpc.notes.list.useQuery();
+
 const search = useSearch(
   z.object({
     modal: z.optional(z.string()),
   })
 );
-
-const { data } = await useSuperjson("/api/notes", {
-  default: () => {
-    return {
-      notes: [],
-    };
-  },
-});
 
 const [form, { Field }] = useForm(
   z.object({
@@ -23,7 +20,11 @@ const [form, { Field }] = useForm(
 );
 
 const onSubmit = form.handleSubmit(async (values) => {
-  console.log(values);
+  await createNote(values);
+
+  invalidate(trpc.notes.list, undefined);
+
+  search.modal = undefined;
 });
 </script>
 
@@ -36,8 +37,8 @@ const onSubmit = form.handleSubmit(async (values) => {
         Add note
       </button>
     </div>
-    <div class="grid grid-cols-3">
-      <div v-for="note of data.notes" :key="note.id">
+    <div class="grid grid-cols-3 gap-4">
+      <div v-for="note of notes" :key="note.id">
         <div class="bg-card p-4 rounded">
           <p>
             {{ note.content }}
