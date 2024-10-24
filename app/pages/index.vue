@@ -32,10 +32,10 @@ const onSubmit = form.handleSubmit(async (values) => {
   <div>
     <div class="flex justify-between items-center py-3">
       <h1 class="text-xl font-bold">Notes</h1>
-      <button class="flex items-center gap-2" @click="search.modal = 'new'">
+      <UiButton size="sm" variant="ghost" @click="search.modal = 'new'">
         <Icon name="ph:plus" />
         Add note
-      </button>
+      </UiButton>
     </div>
     <div class="grid grid-cols-3 gap-4">
       <div v-for="note of notes" :key="note.id">
@@ -54,14 +54,14 @@ const onSubmit = form.handleSubmit(async (values) => {
       <UiDialogContent>
         <form class="space-y-5" @submit="onSubmit">
           <Field v-slot="{ field }" name="title">
-            <div class="space-y-2">
+            <div class="space-y-1">
               <UiLabel> Title </UiLabel>
               <UiInput v-bind="field" class="w-full" />
               <FormError />
             </div>
           </Field>
           <Field v-slot="{ field }" name="content">
-            <div class="space-y-2">
+            <div class="space-y-1">
               <UiLabel> Content </UiLabel>
               <UiTextarea v-bind="field" class="w-full" />
               <FormError />
@@ -69,7 +69,7 @@ const onSubmit = form.handleSubmit(async (values) => {
           </Field>
 
           <UiDialogFooter>
-            <UiDialogClose>
+            <UiDialogClose as-child>
               <UiButton variant="ghost"> Cancel </UiButton>
             </UiDialogClose>
             <UiButton>Create</UiButton>

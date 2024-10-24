@@ -1,24 +1,28 @@
 <script setup lang="ts">
 import type { PrimitiveProps } from "radix-vue";
 import type { VariantProps } from "cva";
+import { focusRing } from "~/utils/styles";
 
-const buttonVariants = cva({
-  base: "text-foreground inline-flex items-center justify-center rounded text-sm transition-colors duration-200 disabled:opacity-50",
-  variants: {
-    variant: {
-      default: "bg-primary text-foreground hover:bg-primary/90",
-      ghost: "hover:bg-muted font-normal",
+const buttonVariants = compose(
+  focusRing,
+  cva({
+    base: "text-foreground gap-2 inline-flex items-center justify-center rounded text-sm transition-colors duration-200 disabled:opacity-50",
+    variants: {
+      variant: {
+        default: "bg-primary text-foreground hover:bg-primary/90",
+        ghost: "hover:bg-muted font-normal",
+      },
+      size: {
+        sm: "h-8 px-2",
+        default: "h-9 px-3 py-2",
+      },
     },
-    size: {
-      sm: "h-8 px-3",
-      default: "h-9 px-3 py-2",
+    defaultVariants: {
+      variant: "default",
+      size: "default",
     },
-  },
-  defaultVariants: {
-    variant: "default",
-    size: "default",
-  },
-});
+  })
+);
 
 type ButtonVariants = VariantProps<typeof buttonVariants>;
 

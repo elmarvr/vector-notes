@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { focusRing } from "~/utils/styles";
+
 const props = defineProps<{
   class?: ClassValue;
 }>();
@@ -6,6 +8,8 @@ const props = defineProps<{
 
 <template>
   <textarea
-    :class="cx('min-h-9 border rounded p-2 bg-transparent', props.class)"
+    :class="
+      cx(focusRing(), 'min-h-9 border rounded p-2 bg-transparent', props.class)
+    "
   />
 </template>

@@ -8,3 +8,7 @@ export const { cx, cva, compose } = defineConfig({
 });
 
 export type ClassValue = Parameters<typeof cx>[0];
+
+export const focusRing = cva({
+  base: "focus-visible:ring-2 ring-offset-2 ring-offset-background outline-none",
+});

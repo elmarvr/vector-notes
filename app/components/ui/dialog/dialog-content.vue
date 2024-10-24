@@ -28,6 +28,7 @@ const forwarded = useForwardPropsEmits(contentProps, emit);
       v-bind="forwarded"
       :class="
         cx(
+          focusRing(),
           'fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded w-full max-w-xl p-6',
           props.class
         )
@@ -35,7 +36,14 @@ const forwarded = useForwardPropsEmits(contentProps, emit);
     >
       <slot />
 
-      <RadixDialogClose class="size-4 absolute top-4 right-4">
+      <RadixDialogClose
+        :class="
+          cx(
+            focusRing(),
+            'rounded size-5 grid place-items-center absolute top-4 right-4'
+          )
+        "
+      >
         <Icon name="ph:x" />
         <span class="sr-only">Close</span>
       </RadixDialogClose>
