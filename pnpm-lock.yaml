@@ -20,15 +20,15 @@ dependencies:
   '@nuxtjs/tailwindcss':
     specifier: ^6.12.2
     version: 6.12.2
+  '@tanstack/vue-form':
+    specifier: ^0.34.1
+    version: 0.34.1(vue@3.5.12)
+  '@tanstack/zod-form-adapter':
+    specifier: ^0.34.1
+    version: 0.34.1(zod@3.23.8)
   '@trpc/server':
     specifier: ^10.45.2
     version: 10.45.2
-  '@vee-validate/valibot':
-    specifier: ^4.14.3
-    version: 4.14.3(typescript@5.6.3)(vue@3.5.12)
-  '@vee-validate/zod':
-    specifier: ^4.14.4
-    version: 4.14.4(vue@3.5.12)
   '@vueuse/core':
     specifier: ^11.1.0
     version: 11.1.0(vue@3.5.12)
@@ -3261,8 +3261,44 @@ packages:
       tslib: 2.8.0
     dev: false
 
+  /@tanstack/form-core@0.34.1:
+    resolution: {integrity: sha512-W8xRWcvlK5oek9V/JPblUyBf/cRb06nxqJTdEf7wZ6HxPnB0V9nNwZlWxvSfkMrbSkV+/H972Evy3cVc6WBB7g==}
+    dependencies:
+      '@tanstack/store': 0.5.5
+    dev: false
+
+  /@tanstack/store@0.5.5:
+    resolution: {integrity: sha512-EOSrgdDAJExbvRZEQ/Xhh9iZchXpMN+ga1Bnk8Nmygzs8TfiE6hbzThF+Pr2G19uHL6+DTDTHhJ8VQiOd7l4tA==}
+    dev: false
+
   /@tanstack/virtual-core@3.10.8:
     resolution: {integrity: sha512-PBu00mtt95jbKFi6Llk9aik8bnR3tR/oQP1o3TSi+iG//+Q2RTIzCEgKkHG8BB86kxMNW6O8wku+Lmi+QFR6jA==}
+    dev: false
+
+  /@tanstack/vue-form@0.34.1(vue@3.5.12):
+    resolution: {integrity: sha512-rAlgQ/gwwWMge9PlVsSzSOJ5FnLU75ZpzIFJnxK5KBGQyd7/aeTn8vehfLjDPlk15bCc4UiO1GPlvSg+W39U6w==}
+    peerDependencies:
+      vue: ^3.3.0
+    dependencies:
+      '@tanstack/form-core': 0.34.1
+      '@tanstack/vue-store': 0.5.6(vue@3.5.12)
+      vue: 3.5.12(typescript@5.6.3)
+    transitivePeerDependencies:
+      - '@vue/composition-api'
+    dev: false
+
+  /@tanstack/vue-store@0.5.6(vue@3.5.12):
+    resolution: {integrity: sha512-gMRicUGGWTN5QGlv9yBKWaAiHTmbH5DX0vozEblhRGYnBfFBwr51l3uzYndtilsFYfZvphEyngKTRdUb5KQ1OQ==}
+    peerDependencies:
+      '@vue/composition-api': ^1.2.1
+      vue: ^2.5.0 || ^3.0.0
+    peerDependenciesMeta:
+      '@vue/composition-api':
+        optional: true
+    dependencies:
+      '@tanstack/store': 0.5.5
+      vue: 3.5.12(typescript@5.6.3)
+      vue-demi: 0.14.10(vue@3.5.12)
     dev: false
 
   /@tanstack/vue-virtual@3.10.8(vue@3.5.12):
@@ -3272,6 +3308,15 @@ packages:
     dependencies:
       '@tanstack/virtual-core': 3.10.8
       vue: 3.5.12(typescript@5.6.3)
+    dev: false
+
+  /@tanstack/zod-form-adapter@0.34.1(zod@3.23.8):
+    resolution: {integrity: sha512-BVLzOXMgQqSS3gROyxP2PdmhRLzfWRThdTDMtqdg9Oi8Mv+DlMJ5nSwvOFBzVPra+DyUVzNySnsR3DDNDVXzKA==}
+    peerDependencies:
+      zod: ^3.x
+    dependencies:
+      '@tanstack/form-core': 0.34.1
+      zod: 3.23.8
     dev: false
 
   /@trpc/client@10.45.2(@trpc/server@10.45.2):
@@ -3485,27 +3530,6 @@ packages:
 
   /@uploadthing/mime-types@0.3.0:
     resolution: {integrity: sha512-jN/XFvpKTzcd3MXT/9D9oxx05scnYiSYxAXF/e6hyg377zFducRxivU/kHyYTkpUZPTmOL5q9EQbOkUsXMlSMg==}
-    dev: false
-
-  /@vee-validate/valibot@4.14.3(typescript@5.6.3)(vue@3.5.12):
-    resolution: {integrity: sha512-p0EPrIw1ULaDVHFZR/KnQ7VSB6CQssU9pqZlYL8drcMaZxdO8tvnOak+wnfQmfQU2Eb4Zb51hWXyYfnpO7CeSA==}
-    dependencies:
-      type-fest: 4.26.1
-      valibot: 1.0.0-beta.0(typescript@5.6.3)
-      vee-validate: 4.14.3(vue@3.5.12)
-    transitivePeerDependencies:
-      - typescript
-      - vue
-    dev: false
-
-  /@vee-validate/zod@4.14.4(vue@3.5.12):
-    resolution: {integrity: sha512-ovRr2jZ+exuPnqT2LwNpsmxW4ETOywrvZv4aoihTSsBHZIi082IbqPjM+wBd4oaCK7vyByMPyGSZOG19GTmjYw==}
-    dependencies:
-      type-fest: 4.26.1
-      vee-validate: 4.14.4(vue@3.5.12)
-      zod: 3.23.8
-    transitivePeerDependencies:
-      - vue
     dev: false
 
   /@vercel/nft@0.26.5:
@@ -9078,17 +9102,6 @@ packages:
       typescript: 5.6.3
     dev: false
 
-  /valibot@1.0.0-beta.0(typescript@5.6.3):
-    resolution: {integrity: sha512-Q/oine+NPMXdIy3vwluw0vidHLk0mTPUQBRHc+EHZXnEWF3KzLx1YLsVHPVrgHaMGRfV58P9eGOgxJvi0a059w==}
-    peerDependencies:
-      typescript: '>=5'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 5.6.3
-    dev: false
-
   /validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
     dependencies:
@@ -9102,16 +9115,6 @@ packages:
 
   /vee-validate@4.14.3(vue@3.5.12):
     resolution: {integrity: sha512-o4yABwgmCxyNz63hAFiDuLtK4qSrJ3+Ri5kbbJ9RQecXpaMp6NzJUEGE3LOcScakkSmtLDzvliQ2yBdFyPWDIw==}
-    peerDependencies:
-      vue: ^3.4.26
-    dependencies:
-      '@vue/devtools-api': 7.5.3
-      type-fest: 4.26.1
-      vue: 3.5.12(typescript@5.6.3)
-    dev: false
-
-  /vee-validate@4.14.4(vue@3.5.12):
-    resolution: {integrity: sha512-Eg1FK2IqxqmujjN8Oehvqfx+QynyrIVc6Su2h/HQI/m3VEyUXW4wlB0h0sLkNizsEWlTj7Kwxn5Q2UWCr7RTQg==}
     peerDependencies:
       vue: ^3.4.26
     dependencies:
