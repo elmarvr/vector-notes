@@ -15,8 +15,8 @@ import { type Schema } from "zod";
 
 export function useForm<TSchema extends Schema>(opts: {
   schema: TSchema;
-
-  onSubmit: (
+  defaultValues?: NoInfer<Partial<TSchema["_output"]>>;
+  onSubmit?: (
     data: TSchema["_output"],
     api: FormApi<TSchema["_output"], Validator<unknown, Schema>>
   ) => void;
@@ -26,12 +26,13 @@ export function useForm<TSchema extends Schema>(opts: {
     handleSubmit: _handleSubmit,
     ...form
   } = __useForm<TSchema["_output"], Validator<unknown, Schema>>({
+    defaultValues: opts.defaultValues,
     validatorAdapter: zodValidator(),
     validators: {
       onSubmit: opts.schema,
       onChange: opts.schema,
     },
-    onSubmit: ({ value, formApi }) => opts.onSubmit(value, formApi),
+    onSubmit: ({ value, formApi }) => opts.onSubmit?.(value, formApi),
   });
 
   const formState = form.useStore((state) => ({
@@ -93,7 +94,7 @@ const Field = defineComponent(
   (_, context: SetupContext) => {
     const field = useField(context.attrs as never);
 
-    const fieldBinding = {
+    const fieldBinding = reactive({
       name: context.attrs.name,
       value: field.api.state.value,
       onChange: (e: any) => {
@@ -102,7 +103,7 @@ const Field = defineComponent(
       onBlur: field.api.handleBlur,
       modelValue: field.api.state.value,
       "onUpdate:modelValue": field.api.handleChange,
-    };
+    });
 
     provide(
       FieldMetaKey,

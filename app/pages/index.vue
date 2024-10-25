@@ -1,43 +1,32 @@
 <script setup lang="ts">
 import { z } from "zod";
 
-const search = useSearch(
-  z.object({
-    modal: z.string().optional(),
-  })
-);
+const noteId = useRouteQuery("note", undefined, {
+  transform: (value) => {
+    return z
+      .union([z.literal("create"), z.coerce.number()])
+      .optional()
+      .parse(value);
+  },
+});
+
 const trpc = useTrpc();
 
-const { mutate: createNote } = trpc.notes.create.useMutation();
-const { data: notes } = trpc.notes.list.useQuery();
+const { data: notes } = await trpc.notes.list.useQuery();
+const deleteMutation = trpc.notes.delete.useMutation();
 
-const form = useForm({
-  schema: z.object({
-    title: z.string().min(1),
-    content: z.string().min(1),
-  }),
-  onSubmit: async (values) => {
-    await createNote(values);
-
+function deleteNote(id: number) {
+  deleteMutation.mutate({ id }).then(() => {
     refresh(trpc.notes.list, undefined);
+  });
+}
 
-    isOpen.value = false;
-  },
-});
-
-const isOpen = computed({
-  get: () => search.modal === "create",
-  set: (value) => {
-    if (!value) {
-      search.modal = undefined;
-    }
-  },
-});
-
-watch(isOpen, (open) => {
-  if (!open) {
-    form.reset();
+const note = computed(() => {
+  if (noteId.value === "create") {
+    return undefined;
   }
+
+  return notes.value?.find((note) => note.id === noteId.value);
 });
 </script>
 
@@ -49,7 +38,7 @@ watch(isOpen, (open) => {
         <NuxtLink
           :to="{
             query: {
-              modal: 'create',
+              note: 'create',
             },
           }"
         >
@@ -59,45 +48,43 @@ watch(isOpen, (open) => {
       </UiButton>
     </div>
 
-    <ul class="columns-3 space-y-4 pt-6">
-      <li
-        v-for="note in notes"
-        :key="note.id"
-        class="border border-card p-4 rounded min-h-16"
-      >
-        {{ note.content }}
+    <ul class="columns-3 pt-6">
+      <li v-for="note in notes" :key="note.id" class="relative group">
+        <NuxtLink
+          :to="{
+            query: {
+              note: note.id,
+            },
+          }"
+          class="block border border-card p-4 rounded min-h-16 hover:bg-muted transition"
+        >
+          {{ note.content }}
+        </NuxtLink>
+        <button
+          class="absolute top-2 right-2 z-20 group-hover:block hidden"
+          @click.stop="deleteNote(note.id)"
+        >
+          <Icon name="ph:trash" class="size-3.5" />
+        </button>
       </li>
     </ul>
 
-    <UiDialog v-model="isOpen">
-      <UiDialogContent>
-        <UiDialogHeader>
-          <UiDialogTitle>Create a new note</UiDialogTitle>
-        </UiDialogHeader>
-        <form id="note-create" class="space-y-5" @submit="form.handleSubmit">
-          <form.Field v-slot="{ field }" name="title">
-            <div class="space-y-1">
-              <UiLabel> Title </UiLabel>
-              <UiInput v-bind="field" class="w-full" />
-              <FormError />
-            </div>
-          </form.Field>
+    <NoteCreateDialog
+      :open="noteId === 'create'"
+      @close="
+        () => {
+          noteId = undefined;
+        }
+      "
+    />
 
-          <form.Field v-slot="{ field }" name="content">
-            <div class="space-y-1">
-              <UiLabel> Content </UiLabel>
-              <UiTextarea v-bind="field" class="w-full" />
-              <FormError />
-            </div>
-          </form.Field>
-        </form>
-        <UiDialogFooter>
-          <UiDialogClose as-child>
-            <UiButton variant="ghost"> Cancel </UiButton>
-            <UiButton form="note-create">Create</UiButton>
-          </UiDialogClose>
-        </UiDialogFooter>
-      </UiDialogContent>
-    </UiDialog>
+    <NoteUpdateDialog
+      :note="note"
+      @close="
+        () => {
+          noteId = undefined;
+        }
+      "
+    />
   </div>
 </template>

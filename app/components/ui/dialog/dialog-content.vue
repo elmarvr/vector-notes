@@ -29,7 +29,7 @@ const forwarded = useForwardPropsEmits(contentProps, emit);
       :class="
         cx(
           focusRing(),
-          'fixed flex flex-col gap-4 z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded w-full max-w-xl p-6',
+          'fixed flex flex-col gap-5 z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded w-full max-w-xl p-6',
           props.class
         )
       "
