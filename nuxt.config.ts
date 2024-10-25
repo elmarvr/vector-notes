@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@vueuse/nuxt",
     "radix-vue/nuxt",
+    "nuxt-auth-utils",
   ],
 
   components: [

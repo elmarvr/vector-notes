@@ -1,5 +1,9 @@
 <script setup lang="ts">
-const props = defineProps<{
+import type { RouterInput } from "~/composables/use-trpc";
+
+const { user } = useUserSession();
+
+defineProps<{
   open: boolean;
 }>();
 
@@ -11,11 +15,10 @@ const trpc = useTrpc();
 
 const { mutate: createNote } = trpc.notes.create.useMutation();
 
-function onSubmit(values: any) {
+function onSubmit(values: Omit<RouterInput["notes"]["create"], "userId">) {
   createNote(values);
 
   refresh(trpc.notes.list, undefined);
-
   emit("close");
 }
 </script>

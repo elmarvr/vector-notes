@@ -1,5 +1,5 @@
 import { noteUpdateSchema } from "~~/server/utils/validations";
-import { publicProcedure, router } from "../trpc";
+import { privateProcedure, publicProcedure, router } from "../trpc";
 
 export const notesRouter = router({
   list: publicProcedure.query(async () => {
@@ -10,14 +10,20 @@ export const notesRouter = router({
     return notes;
   }),
 
-  create: publicProcedure
-    .input(noteInsertSchema)
-    .mutation(async ({ input }) => {
+  create: privateProcedure
+    .input(noteInsertSchema.omit({ userId: true }))
+    .mutation(async ({ input, ctx }) => {
       const db = useDrizzle();
 
-      const [note] = await db.insert(tables.notes).values(input).returning({
-        id: tables.notes.id,
-      });
+      const [note] = await db
+        .insert(tables.notes)
+        .values({
+          ...input,
+          userId: ctx.user.id,
+        })
+        .returning({
+          id: tables.notes.id,
+        });
 
       return note;
     }),

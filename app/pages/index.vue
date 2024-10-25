@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { z } from "zod";
 
+const { user } = useUserSession();
+
 const noteId = useRouteQuery("note", undefined, {
   transform: (value) => {
     return z
@@ -13,19 +15,15 @@ const noteId = useRouteQuery("note", undefined, {
 const trpc = useTrpc();
 
 const { data: notes } = await trpc.notes.list.useQuery();
-const deleteMutation = trpc.notes.delete.useMutation();
+const { mutate } = trpc.notes.delete.useMutation();
 
-function deleteNote(id: number) {
-  deleteMutation.mutate({ id }).then(() => {
-    refresh(trpc.notes.list, undefined);
-  });
+async function deleteNote(id: number) {
+  await mutate({ id });
+
+  refresh(trpc.notes.list, undefined);
 }
 
 const note = computed(() => {
-  if (noteId.value === "create") {
-    return undefined;
-  }
-
   return notes.value?.find((note) => note.id === noteId.value);
 });
 </script>
@@ -33,7 +31,7 @@ const note = computed(() => {
 <template>
   <div>
     <div class="flex justify-between items-center py-3">
-      <h1 class="text-xl font-bold">Notes</h1>
+      <h1 class="text-xl font-bold">{{ user?.name }}'s notes</h1>
       <UiButton size="sm" variant="ghost" as-child>
         <NuxtLink
           :to="{
