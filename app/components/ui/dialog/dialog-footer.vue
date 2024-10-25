@@ -10,7 +10,7 @@ const props = defineProps<DialogFooterProps>();
   <div
     :class="
       cx(
-        'flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-x-2 pt-4',
+        'flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-x-2',
         props.class
       )
     "

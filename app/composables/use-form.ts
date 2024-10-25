@@ -1,66 +1,145 @@
 import {
   useForm as __useForm,
-  Field,
-  type FieldOptions,
-  type Path,
-  type PathValue,
-  type FormContext as VeeFormContext,
-  type FieldBindingObject,
-  useFieldError,
-  FieldContextKey,
-} from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
-import type { z, ZodObject } from "zod";
+  FormApi,
+  useField,
+  type DeepKeys,
+  type DeepValue,
+  type FieldState,
+  type FormState,
+  type Validator,
+  getBy,
+} from "@tanstack/vue-form";
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import type { InjectionKey, SetupContext, SlotsType } from "vue";
+import { type Schema } from "zod";
 
-import type { SetupContext, SlotsType } from "vue";
+export function useForm<TSchema extends Schema>(opts: {
+  schema: TSchema;
 
-export const useForm = <TSchema extends z.ZodObject<any>>(
-  schema: TSchema,
-  opts?: Record<string, unknown>
-): [FormContext<TSchema>, { Field: FieldComponent<TSchema> }] => {
-  const form = __useForm({
-    validationSchema: toTypedSchema(schema),
-    ...opts,
+  onSubmit: (
+    data: TSchema["_output"],
+    api: FormApi<TSchema["_output"], Validator<unknown, Schema>>
+  ) => void;
+}) {
+  const {
+    Field: _,
+    handleSubmit: _handleSubmit,
+    ...form
+  } = __useForm<TSchema["_output"], Validator<unknown, Schema>>({
+    validatorAdapter: zodValidator(),
+    validators: {
+      onSubmit: opts.schema,
+      onChange: opts.schema,
+    },
+    onSubmit: ({ value, formApi }) => opts.onSubmit(value, formApi),
   });
 
-  return [form, { Field }] as never;
-};
+  const formState = form.useStore((state) => ({
+    submissionAttempts: state.submissionAttempts,
+  }));
 
-type FormContext<TSchema extends z.ZodObject<any>> = VeeFormContext<
-  TSchema["_input"],
-  TSchema["_output"]
->;
+  provide(FormStateKey, formState);
 
-interface FieldComponent<TSchema extends ZodObject<any>> {
-  <TPath extends Path<TSchema["_input"]>>(
-    options: Partial<FieldOptions<PathValue<TSchema["_input"], TPath>>> & {
-      name: TPath;
+  const FieldComp = defineComponent((props, context) => {
+    return () =>
+      h(
+        Field,
+        {
+          ...props,
+          ...context.attrs,
+          form: form,
+        },
+        context.slots
+      );
+  }) as unknown as FieldComponent<TSchema["_output"]>;
+
+  return {
+    ...form,
+    Field: FieldComp,
+    handleSubmit: (e: Event) => {
+      e.preventDefault();
+      return _handleSubmit();
+    },
+  };
+}
+
+type FieldComponent<TParentData> = {
+  <TName extends DeepKeys<TParentData>>(
+    props: {
+      name: TName;
     },
     context: SetupContext<
       {},
       SlotsType<{
-        default: (props: {
-          field: FieldBindingObject<PathValue<TSchema["_input"], TPath>>;
-        }) => any;
+        default: {
+          field: {
+            name: TName;
+            onBlur: () => void;
+            value: DeepValue<TParentData, TName>;
+            onInput: (e: any) => void;
+            modelValue: DeepValue<TParentData, TName>;
+            "onUpdate:modelValue": (
+              value: DeepValue<TParentData, TName>
+            ) => void;
+          };
+        };
       }>
     >
   ): any;
   _: true;
-}
+};
 
-export function useField() {
-  const ctx = inject(FieldContextKey);
+const Field = defineComponent(
+  (_, context: SetupContext) => {
+    const field = useField(context.attrs as never);
+
+    const fieldBinding = {
+      name: context.attrs.name,
+      value: field.api.state.value,
+      onChange: (e: any) => {
+        field.api.handleChange(e.target.value);
+      },
+      onBlur: field.api.handleBlur,
+      modelValue: field.api.state.value,
+      "onUpdate:modelValue": field.api.handleChange,
+    };
+
+    provide(
+      FieldMetaKey,
+      computed(() => field.state.value.meta)
+    );
+
+    return () =>
+      context.slots.default!({
+        field: fieldBinding,
+      });
+  },
+  { name: "Field", inheritAttrs: false }
+);
+
+const FormStateKey: InjectionKey<
+  Ref<Pick<FormState<unknown>, "submissionAttempts">>
+> = Symbol("FormState");
+
+export function useFormState() {
+  const ctx = inject(FormStateKey);
 
   if (!ctx) {
-    throw new Error("useFormField should be used within <FormField>");
+    throw new Error("useFormState must be used within a Form component");
   }
 
-  const { name } = ctx;
+  return ctx;
+}
 
-  const error = useFieldError(name);
+const FieldMetaKey: InjectionKey<Ref<FieldState<unknown>["meta"]>> =
+  Symbol("FieldMeta");
 
-  return {
-    error,
-    name,
-  };
+export function useFieldMeta() {
+  const ctx = inject(FieldMetaKey);
+
+  if (!ctx) {
+    throw new Error("useFieldMeta must be used within a Field component");
+  }
+
+  return ctx;
 }

@@ -6,10 +6,10 @@ type InvalidateParams<TProcedure extends AnyQueryProcedure> =
     ? TArgs
     : never;
 
-export function invalidate<TProcedure extends AnyQueryProcedure>(
+export async function refresh<TProcedure extends AnyQueryProcedure>(
   ...params: InvalidateParams<TProcedure>
 ) {
   const queryKey = getQueryKey<TProcedure>(...params);
 
-  refreshNuxtData(queryKey);
+  return refreshNuxtData(queryKey);
 }

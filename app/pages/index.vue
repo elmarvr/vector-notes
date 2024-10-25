@@ -1,30 +1,43 @@
 <script setup lang="ts">
 import { z } from "zod";
 
+const search = useSearch(
+  z.object({
+    modal: z.string().optional(),
+  })
+);
 const trpc = useTrpc();
 
 const { mutate: createNote } = trpc.notes.create.useMutation();
 const { data: notes } = trpc.notes.list.useQuery();
 
-const search = useSearch(
-  z.object({
-    modal: z.optional(z.string()),
-  })
-);
+const form = useForm({
+  schema: z.object({
+    title: z.string().min(1),
+    content: z.string().min(1),
+  }),
+  onSubmit: async (values) => {
+    await createNote(values);
 
-const [form, { Field }] = useForm(
-  z.object({
-    title: z.string().min(3),
-    content: z.string().min(3),
-  })
-);
+    refresh(trpc.notes.list, undefined);
 
-const onSubmit = form.handleSubmit(async (values) => {
-  await createNote(values);
+    isOpen.value = false;
+  },
+});
 
-  invalidate(trpc.notes.list, undefined);
+const isOpen = computed({
+  get: () => search.modal === "create",
+  set: (value) => {
+    if (!value) {
+      search.modal = undefined;
+    }
+  },
+});
 
-  search.modal = undefined;
+watch(isOpen, (open) => {
+  if (!open) {
+    form.reset();
+  }
 });
 </script>
 
@@ -32,49 +45,58 @@ const onSubmit = form.handleSubmit(async (values) => {
   <div>
     <div class="flex justify-between items-center py-3">
       <h1 class="text-xl font-bold">Notes</h1>
-      <UiButton size="sm" variant="ghost" @click="search.modal = 'new'">
-        <Icon name="ph:plus" />
-        Add note
+      <UiButton size="sm" variant="ghost" as-child>
+        <NuxtLink
+          :to="{
+            query: {
+              modal: 'create',
+            },
+          }"
+        >
+          <Icon name="ph:plus" />
+          Add note
+        </NuxtLink>
       </UiButton>
     </div>
-    <div class="grid grid-cols-3 gap-4">
-      <div v-for="note of notes" :key="note.id">
-        <div class="bg-card p-4 rounded">
-          <p>
-            {{ note.content }}
-          </p>
-        </div>
-      </div>
-    </div>
 
-    <UiDialog
-      :open="!!search.modal"
-      @update:open="(open) => !open && (search.modal = undefined)"
-    >
+    <ul class="columns-3 space-y-4 pt-6">
+      <li
+        v-for="note in notes"
+        :key="note.id"
+        class="border border-card p-4 rounded min-h-16"
+      >
+        {{ note.content }}
+      </li>
+    </ul>
+
+    <UiDialog v-model="isOpen">
       <UiDialogContent>
-        <form class="space-y-5" @submit="onSubmit">
-          <Field v-slot="{ field }" name="title">
+        <UiDialogHeader>
+          <UiDialogTitle>Create a new note</UiDialogTitle>
+        </UiDialogHeader>
+        <form id="note-create" class="space-y-5" @submit="form.handleSubmit">
+          <form.Field v-slot="{ field }" name="title">
             <div class="space-y-1">
               <UiLabel> Title </UiLabel>
               <UiInput v-bind="field" class="w-full" />
               <FormError />
             </div>
-          </Field>
-          <Field v-slot="{ field }" name="content">
+          </form.Field>
+
+          <form.Field v-slot="{ field }" name="content">
             <div class="space-y-1">
               <UiLabel> Content </UiLabel>
               <UiTextarea v-bind="field" class="w-full" />
               <FormError />
             </div>
-          </Field>
-
-          <UiDialogFooter>
-            <UiDialogClose as-child>
-              <UiButton variant="ghost"> Cancel </UiButton>
-            </UiDialogClose>
-            <UiButton>Create</UiButton>
-          </UiDialogFooter>
+          </form.Field>
         </form>
+        <UiDialogFooter>
+          <UiDialogClose as-child>
+            <UiButton variant="ghost"> Cancel </UiButton>
+            <UiButton form="note-create">Create</UiButton>
+          </UiDialogClose>
+        </UiDialogFooter>
       </UiDialogContent>
     </UiDialog>
   </div>

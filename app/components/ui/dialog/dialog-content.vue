@@ -29,7 +29,7 @@ const forwarded = useForwardPropsEmits(contentProps, emit);
       :class="
         cx(
           focusRing(),
-          'fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded w-full max-w-xl p-6',
+          'fixed flex flex-col gap-4 z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border rounded w-full max-w-xl p-6',
           props.class
         )
       "
@@ -40,7 +40,7 @@ const forwarded = useForwardPropsEmits(contentProps, emit);
         :class="
           cx(
             focusRing(),
-            'rounded size-5 grid place-items-center absolute top-4 right-4'
+            'rounded size-6 grid place-items-center absolute top-2 right-2'
           )
         "
       >

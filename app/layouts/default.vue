@@ -1,6 +1,6 @@
 <template>
   <Body>
-    <div class="w-full max-w-2xl mx-auto">
+    <div class="w-full max-w-3xl mx-auto">
       <main>
         <slot />
       </main>

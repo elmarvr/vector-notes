@@ -1,9 +1,17 @@
 <script lang="ts" setup>
-import { ErrorMessage } from "vee-validate";
+const state = useFormState();
+const meta = useFieldMeta();
 
-const { name } = useField();
+const errorMessage = computed(() => {
+  return meta.value.errors[0];
+});
 </script>
 
 <template>
-  <ErrorMessage as="p" :name="name" class="text-sm font-medium text-red-700" />
+  <p
+    v-if="state.submissionAttempts > 0 && errorMessage"
+    class="text-red-700 text-sm"
+  >
+    {{ errorMessage }}
+  </p>
 </template>
