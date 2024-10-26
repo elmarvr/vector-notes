@@ -10,7 +10,7 @@ const t = initTRPC.context<Context>().create({
  * Unprotected procedure
  **/
 export const publicProcedure = t.procedure;
-export const privateProcedure = t.procedure.use(async (opts) => {
+export const protectedProcedure = t.procedure.use(async (opts) => {
   const user = opts.ctx.session.user;
 
   if (!user) {

@@ -29,7 +29,7 @@ const note = computed(() => {
 </script>
 
 <template>
-  <div>
+  <div class="flex flex-col">
     <div class="flex justify-between items-center py-3">
       <h1 class="text-xl font-bold">{{ user?.name }}'s notes</h1>
       <UiButton size="sm" variant="ghost" as-child>
@@ -46,7 +46,7 @@ const note = computed(() => {
       </UiButton>
     </div>
 
-    <ul class="columns-3 pt-6">
+    <ul class="columns-3 pt-6 flex-1">
       <li v-for="note in notes" :key="note.id" class="relative group">
         <NuxtLink
           :to="{
@@ -66,23 +66,23 @@ const note = computed(() => {
         </button>
       </li>
     </ul>
-
-    <NoteCreateDialog
-      :open="noteId === 'create'"
-      @close="
-        () => {
-          noteId = undefined;
-        }
-      "
-    />
-
-    <NoteUpdateDialog
-      :note="note"
-      @close="
-        () => {
-          noteId = undefined;
-        }
-      "
-    />
   </div>
+
+  <NoteCreateDialog
+    :open="noteId === 'create'"
+    @close="
+      () => {
+        noteId = undefined;
+      }
+    "
+  />
+
+  <NoteUpdateDialog
+    :note="note"
+    @close="
+      () => {
+        noteId = undefined;
+      }
+    "
+  />
 </template>

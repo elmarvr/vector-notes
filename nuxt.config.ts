@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     "@vueuse/nuxt",
     "radix-vue/nuxt",
     "nuxt-auth-utils",
+    "@pinia/nuxt",
   ],
 
   components: [
@@ -18,6 +19,10 @@ export default defineNuxtConfig({
       prefix: "Ui",
     },
   ],
+
+  imports: {
+    dirs: ["stores"],
+  },
 
   devtools: { enabled: true },
 
@@ -35,6 +40,13 @@ export default defineNuxtConfig({
   },
   hub: {
     database: true,
+    ai: true,
+    vectorize: {
+      notes: {
+        dimensions: 768,
+        metric: "cosine",
+      },
+    },
   },
   eslint: {
     config: {},

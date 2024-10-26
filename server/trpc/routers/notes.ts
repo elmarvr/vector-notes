@@ -1,21 +1,19 @@
 import { noteUpdateSchema } from "~~/server/utils/validations";
-import { privateProcedure, publicProcedure, router } from "../trpc";
+import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { TRPCError } from "@trpc/server";
+import { Note } from "~~/server/utils/drizzle";
 
 export const notesRouter = router({
-  list: publicProcedure.query(async () => {
-    const db = useDrizzle();
-
-    const notes = await db.query.notes.findMany();
+  list: publicProcedure.query(async ({ ctx }) => {
+    const notes = await ctx.db.query.notes.findMany();
 
     return notes;
   }),
 
-  create: privateProcedure
+  create: protectedProcedure
     .input(noteInsertSchema.omit({ userId: true }))
     .mutation(async ({ input, ctx }) => {
-      const db = useDrizzle();
-
-      const [note] = await db
+      const result = await ctx.db
         .insert(tables.notes)
         .values({
           ...input,
@@ -23,45 +21,87 @@ export const notesRouter = router({
         })
         .returning({
           id: tables.notes.id,
+          content: tables.notes.content,
         });
 
-      return note;
+      const note = result[0];
+
+      if (!note) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create note",
+        });
+      }
+
+      await upsertNoteVector(note);
+
+      return {
+        id: note.id,
+        content: input.content,
+      };
     }),
 
-  update: publicProcedure
+  update: protectedProcedure
     .input(noteUpdateSchema)
-    .mutation(async ({ input }) => {
-      const db = useDrizzle();
-
-      await db
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db
         .update(tables.notes)
         .set(input)
         .where(eq(tables.notes.id, input.id));
+
+      if (input.content) {
+        const existing = await ctx.db.query.notes.findFirst({
+          where: eq(tables.notes.id, input.id),
+        });
+
+        if (input.content !== existing?.content) {
+          await upsertNoteVector({
+            id: input.id,
+            content: input.content,
+          });
+        }
+      }
 
       return {
         id: input.id,
       };
     }),
 
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(noteSchema.pick({ id: true }))
-    .mutation(async ({ input }) => {
-      const db = useDrizzle();
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db.delete(tables.notes).where(eq(tables.notes.id, input.id));
 
-      await db.delete(tables.notes).where(eq(tables.notes.id, input.id));
+      if (useRuntimeConfig().hub.remote) {
+        await hubVectorize("notes").deleteByIds([input.id.toString()]);
+      }
 
       return null;
     }),
-
-  byId: publicProcedure
-    .input(noteSchema.pick({ id: true }))
-    .query(async ({ input }) => {
-      const db = useDrizzle();
-
-      const note = await db.query.notes.findFirst({
-        where: eq(tables.notes.id, input.id),
-      });
-
-      return note;
-    }),
 });
+
+async function upsertNoteVector(note: Pick<Note, "id" | "content">) {
+  if (!useRuntimeConfig().hub.remote) {
+    return;
+  }
+
+  const { data } = await hubAI().run("@cf/baai/bge-base-en-v1.5", {
+    text: [note.content],
+  });
+
+  const values = data[0];
+
+  if (!values) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to generate vector embedding",
+    });
+  }
+
+  await hubVectorize("notes").upsert([
+    {
+      id: note.id.toString(),
+      values: values,
+    },
+  ]);
+}
