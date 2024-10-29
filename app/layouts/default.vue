@@ -2,6 +2,7 @@
 import { z } from "zod";
 
 const router = useRouter();
+
 const { send } = useMessageStore();
 
 const form = useForm({
@@ -20,6 +21,25 @@ const onSubmit = form.handleSubmit(({ content }, ctx) => {
 <template>
   <Body>
     <div class="flex flex-col h-full">
+      <header class="py-3">
+        <div class="max-w-3xl mx-auto flex justify-between items-center">
+          <h1 class="text-xl font-bold">Vector notes</h1>
+
+          <UiButton size="sm" variant="ghost" as-child>
+            <NuxtLink
+              :to="{
+                query: {
+                  note: 'create',
+                },
+              }"
+            >
+              <Icon name="ph:plus" />
+              Add note
+            </NuxtLink>
+          </UiButton>
+        </div>
+      </header>
+
       <div class="flex-1 min-h-0 overflow-y-auto">
         <main class="max-w-3xl mx-auto h-full">
           <slot />
@@ -36,5 +56,7 @@ const onSubmit = form.handleSubmit(({ content }, ctx) => {
         </form>
       </div>
     </div>
+
+    <NoteCreateDialog />
   </Body>
 </template>

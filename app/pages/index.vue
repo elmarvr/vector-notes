@@ -1,17 +1,6 @@
 <script setup lang="ts">
 import { z } from "zod";
 
-const { user } = useUserSession();
-
-const noteId = useRouteQuery("note", undefined, {
-  transform: (value) => {
-    return z
-      .union([z.literal("create"), z.coerce.number()])
-      .optional()
-      .parse(value);
-  },
-});
-
 const trpc = useTrpc();
 
 const { data: notes } = await trpc.notes.list.useQuery();
@@ -22,31 +11,11 @@ async function deleteNote(id: number) {
 
   refresh(trpc.notes.list, undefined);
 }
-
-const note = computed(() => {
-  return notes.value?.find((note) => note.id === noteId.value);
-});
 </script>
 
 <template>
   <div class="flex flex-col">
-    <div class="flex justify-between items-center py-3">
-      <h1 class="text-xl font-bold">{{ user?.name }}'s notes</h1>
-      <UiButton size="sm" variant="ghost" as-child>
-        <NuxtLink
-          :to="{
-            query: {
-              note: 'create',
-            },
-          }"
-        >
-          <Icon name="ph:plus" />
-          Add note
-        </NuxtLink>
-      </UiButton>
-    </div>
-
-    <ul class="columns-3 pt-6 flex-1">
+    <ul class="grid grid-cols-3 gap-4">
       <li v-for="note in notes" :key="note.id" class="relative group">
         <NuxtLink
           :to="{
@@ -54,7 +23,7 @@ const note = computed(() => {
               note: note.id,
             },
           }"
-          class="block border border-card p-4 rounded min-h-16 hover:bg-muted transition"
+          class="block aspect-square border border-card p-4 rounded min-h-16 hover:bg-muted transition"
         >
           {{ note.content }}
         </NuxtLink>
@@ -68,21 +37,5 @@ const note = computed(() => {
     </ul>
   </div>
 
-  <NoteCreateDialog
-    :open="noteId === 'create'"
-    @close="
-      () => {
-        noteId = undefined;
-      }
-    "
-  />
-
-  <NoteUpdateDialog
-    :note="note"
-    @close="
-      () => {
-        noteId = undefined;
-      }
-    "
-  />
+  <NoteUpdateDialog />
 </template>

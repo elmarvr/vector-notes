@@ -1,42 +1,46 @@
 <script setup lang="ts">
 import type { EmitPayload } from "~/utils/types";
-import type { Note } from "~~/server/utils/drizzle";
 import type NoteForm from "./note-form.vue";
 
-type SubmitPayload = EmitPayload<typeof NoteForm, "submit">[0];
-
-const props = defineProps<{
-  note: Note | undefined;
-}>();
-
-const emit = defineEmits<{
-  (event: "close"): void;
-}>();
+const search = useNoteSearch();
 
 const trpc = useTrpc();
 
+const { data: notes } = trpc.notes.list.useQuery();
 const { mutate: updateNote } = trpc.notes.update.useMutation();
 
+const note = computed(() => {
+  return notes.value?.find((note) => note.id === search.note);
+});
+
+const isOpen = computed({
+  get: () => !!note.value,
+  set: (value) => {
+    search.note = !value ? undefined : search.note;
+  },
+});
+
+type SubmitPayload = EmitPayload<typeof NoteForm, "submit">[0];
 function onSubmit(values: SubmitPayload) {
   updateNote({
-    id: props.note!.id,
+    id: search.note as number,
     ...values,
   });
 
   refresh(trpc.notes.list, undefined);
 
-  emit("close");
+  isOpen.value = false;
 }
 </script>
 
 <template>
-  <UiDialog :open="!!note" @update:open="(open) => !open && emit('close')">
+  <UiDialog v-model:open="isOpen">
     <UiDialogContent>
       <UiDialogHeader>
         <UiDialogTitle> Update Note </UiDialogTitle>
       </UiDialogHeader>
 
-      <NoteForm id="note-update" @submit="onSubmit" :default-values="note" />
+      <NoteForm id="note-update" @submit="onSubmit" :initial-values="note" />
 
       <UiDialogFooter>
         <UiDialogClose as-child>

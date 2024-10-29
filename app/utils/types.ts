@@ -1,5 +1,3 @@
-import type NoteForm from "~/components/note-form.vue";
-
 export type ComponentEmit<T> = T extends new (...args: any) => {
   $emit: infer E;
 }

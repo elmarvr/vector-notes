@@ -1,32 +1,30 @@
 <script setup lang="ts">
 import type { EmitPayload } from "~/utils/types";
 import type NoteForm from "./note-form.vue";
+import { z } from "zod";
 
-type SubmitPayload = EmitPayload<typeof NoteForm, "submit">[0];
-
-defineProps<{
-  open: boolean;
-}>();
-
-const emit = defineEmits<{
-  (event: "close"): void;
-}>();
-
+const search = useNoteSearch();
 const trpc = useTrpc();
 
 const { mutate: createNote } = trpc.notes.create.useMutation();
 
-function onSubmit(values: SubmitPayload) {
-  console.log(values);
-  createNote(values);
+const isOpen = computed({
+  get: () => search.note === "create",
+  set: (value) => {
+    search.note = value ? "create" : undefined;
+  },
+});
 
+type SubmitPayload = EmitPayload<typeof NoteForm, "submit">[0];
+function onSubmit(values: SubmitPayload) {
+  createNote(values);
   refresh(trpc.notes.list, undefined);
-  emit("close");
+  isOpen.value = false;
 }
 </script>
 
 <template>
-  <UiDialog :open="open" @update:open="(open) => !open && emit('close')">
+  <UiDialog v-model:open="isOpen">
     <UiDialogContent>
       <UiDialogHeader>
         <UiDialogTitle> Create Note </UiDialogTitle>
