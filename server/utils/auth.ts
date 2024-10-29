@@ -1,4 +1,6 @@
-export default defineEventHandler(async (event) => {
+import type { H3Event } from "h3";
+
+export async function setAnonymousSession(event: H3Event) {
   const db = useDrizzle();
 
   const result = await db
@@ -13,17 +15,19 @@ export default defineEventHandler(async (event) => {
   const user = result[0];
 
   if (!user) {
-    throw new Error("Failed to create anonymous session");
+    throw createError({
+      status: 500,
+      message: "Failed to create anonymous session",
+    });
   }
 
-  await setUserSession(event, {
+  return setUserSession(event, {
     user: {
       id: user.id,
       role: "guest",
       name: null,
       email: null,
+      avatar: null,
     },
   });
-
-  return sendRedirect(event, "/");
-});
+}

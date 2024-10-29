@@ -16,7 +16,7 @@ async function deleteNote(id: number) {
 </script>
 
 <template>
-  <ul class="grid grid-cols-3 gap-4 pt-6">
+  <ul class="grid grid-cols-3 gap-4">
     <li v-for="note in notes" :key="note.id" class="relative group">
       <NuxtLink
         :to="{

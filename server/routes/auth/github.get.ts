@@ -25,6 +25,7 @@ export async function getUser(
     id: string;
     email: string;
     name: string;
+    avatar_url: string;
   }
 ) {
   const db = useDrizzle();
@@ -35,6 +36,7 @@ export async function getUser(
       id: true,
       email: true,
       name: true,
+      avatar: true,
     },
   });
 
@@ -51,12 +53,14 @@ export async function getUser(
         name: data.name,
         email: data.email,
         githubId: data.id,
+        avatar: data.avatar_url,
       })
       .where(eq(tables.users.id, session.user.id))
       .returning({
         id: tables.users.id,
         email: tables.users.email,
         name: tables.users.name,
+        avatar: tables.users.avatar,
       });
 
     return result[0];
@@ -68,11 +72,13 @@ export async function getUser(
       email: data.email,
       name: data.name,
       githubId: data.id,
+      avatar: data.avatar_url,
     })
     .returning({
       id: tables.users.id,
       email: tables.users.email,
       name: tables.users.name,
+      avatar: tables.users.avatar,
     });
 
   return result[0];

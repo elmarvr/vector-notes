@@ -6,6 +6,7 @@ declare module "#auth-utils" {
     email: DBUser["email"];
     name: DBUser["name"];
     role: DBUser["role"];
+    avatar: DBUser["avatar"];
   }
 
   interface UserSession {}

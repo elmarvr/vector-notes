@@ -6,6 +6,7 @@ export const users = sqliteTable("users", {
   email: text("email").unique(),
   name: text("name"),
   githubId: text("github_id").unique(),
+  avatar: text("avatar"),
 
   role: text("role", { enum: ["user", "guest"] }).default("user"),
 

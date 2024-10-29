@@ -2,6 +2,7 @@
 import { z } from "zod";
 
 const router = useRouter();
+const route = useRoute();
 
 const { send } = useMessageStore();
 
@@ -27,7 +28,7 @@ const { user } = useUserSession();
         <div class="max-w-3xl mx-auto flex justify-between items-center">
           <h1 class="text-xl font-bold">Vector notes</h1>
 
-          <div class="flex gap-4 items-center">
+          <div class="flex gap-3 items-center">
             <UiButton size="sm" variant="ghost" as-child>
               <NuxtLink
                 :to="{
@@ -52,12 +53,13 @@ const { user } = useUserSession();
                 Sign in
               </a>
             </UiButton>
+            <UserAvatar v-else :user="user!" />
           </div>
         </div>
       </header>
 
       <div class="flex-1 min-h-0 overflow-y-auto">
-        <main class="max-w-3xl mx-auto h-full">
+        <main class="max-w-3xl mx-auto h-full pt-6">
           <slot />
         </main>
       </div>
@@ -68,7 +70,7 @@ const { user } = useUserSession();
             <UiInput v-bind="field" class="flex-1" />
           </form.Field>
 
-          <UiButton type="submit">Send</UiButton>
+          <UiButton>Send</UiButton>
         </form>
       </div>
     </div>
