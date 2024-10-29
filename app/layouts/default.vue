@@ -2,6 +2,8 @@
 import { z } from "zod";
 const router = useRouter();
 
+const route = useRoute();
+
 const { send } = useMessageStore();
 
 const form = useForm({
@@ -27,7 +29,12 @@ const { user } = useUserSession();
           <h1 class="text-xl font-bold">Vector notes</h1>
 
           <div class="flex gap-3 items-center">
-            <UiButton size="sm" variant="ghost" as-child>
+            <UiButton
+              v-if="route.name === 'index'"
+              size="sm"
+              variant="ghost"
+              as-child
+            >
               <NuxtLink
                 :to="{
                   query: {
@@ -37,6 +44,12 @@ const { user } = useUserSession();
               >
                 <Icon name="ph:plus" class="text-primary" />
                 Add note
+              </NuxtLink>
+            </UiButton>
+            <UiButton v-else as-child variant="ghost" size="sm">
+              <NuxtLink to="/">
+                <Icon name="ph:caret-left" class="text-primary" />
+                Notes
               </NuxtLink>
             </UiButton>
 
@@ -56,11 +69,9 @@ const { user } = useUserSession();
         </div>
       </header>
 
-      <div class="flex-1 min-h-0 overflow-y-auto">
-        <main class="max-w-3xl mx-auto h-full pt-6">
-          <slot />
-        </main>
-      </div>
+      <main class="flex-1 min-h-0">
+        <slot />
+      </main>
 
       <div class="w-full py-6">
         <form class="max-w-3xl mx-auto flex gap-2" @submit="onSubmit">

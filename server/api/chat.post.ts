@@ -14,6 +14,20 @@ export default defineEventHandler(async (event) => {
       .parse(body)
   );
 
+  if (useRuntimeConfig().hub.remote) {
+    await addNotesToMessages(messages);
+  }
+
+  const result = await hubAI().run("@cf/meta/llama-3.1-8b-instruct", {
+    messages,
+    stream: true,
+    max_tokens: 500,
+  });
+
+  return sendStream(event, result as ReadableStream);
+});
+
+async function addNotesToMessages(messages: any[]) {
   const query = messages[messages.length - 1].content;
 
   const embeddings = await hubAI().run("@cf/baai/bge-base-en-v1.5", {
@@ -52,11 +66,4 @@ export default defineEventHandler(async (event) => {
         notes.map((note) => `- *${note.title}*\n${note.content}`).join("\n"),
     });
   }
-
-  const result = await hubAI().run("@cf/meta/llama-3.1-8b-instruct", {
-    messages,
-    stream: true,
-  });
-
-  return sendStream(event, result as ReadableStream);
-});
+}

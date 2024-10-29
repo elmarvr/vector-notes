@@ -1,3 +1,2 @@
-- Add guest cleanup
-- Add auto scroll
 - No notes state
+- Better text area
