@@ -8,43 +8,31 @@ const noteSchema = z.object({
 
 export interface NoteFormProps {
   id: string;
-  defaultValues?: Partial<z.infer<typeof noteSchema>>;
+  initialValues?: Partial<z.infer<typeof noteSchema>>;
+}
+
+export interface NoteFormEmits {
+  (event: "submit", values: z.infer<typeof noteSchema>): void;
 }
 
 const props = defineProps<NoteFormProps>();
-const emit = defineEmits<{
-  (event: "submit", values: z.infer<typeof noteSchema>): void;
-}>();
+const emit = defineEmits<NoteFormEmits>();
 
 const form = useForm({
   schema: z.object({
     title: z.string().min(1),
     content: z.string().min(1),
   }),
-  defaultValues: props.defaultValues,
-  onSubmit: (values) => {
-    emit("submit", values);
-  },
+  initialValues: props.initialValues,
 });
 
-watch(
-  () => props.defaultValues,
-  (defaultValues) => {
-    if (!defaultValues) {
-      return;
-    }
-
-    form.getFieldInfo("title").instance?.setValue(defaultValues.title);
-  },
-  {
-    immediate: true,
-    deep: true,
-  }
-);
+const onSubmit = form.handleSubmit((values) => {
+  emit("submit", values);
+});
 </script>
 
 <template>
-  <form :id="id" class="space-y-5" @submit="form.handleSubmit">
+  <form :id="id" class="space-y-5" @submit="onSubmit">
     <form.Field v-slot="{ field }" name="title">
       <div class="space-y-1">
         <UiLabel> Title </UiLabel>

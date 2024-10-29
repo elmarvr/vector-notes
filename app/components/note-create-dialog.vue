@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { RouterInput } from "~/composables/use-trpc";
+import type { EmitPayload } from "~/utils/types";
+import type NoteForm from "./note-form.vue";
 
-const { user } = useUserSession();
+type SubmitPayload = EmitPayload<typeof NoteForm, "submit">[0];
 
 defineProps<{
   open: boolean;
@@ -15,7 +16,8 @@ const trpc = useTrpc();
 
 const { mutate: createNote } = trpc.notes.create.useMutation();
 
-function onSubmit(values: Omit<RouterInput["notes"]["create"], "userId">) {
+function onSubmit(values: SubmitPayload) {
+  console.log(values);
   createNote(values);
 
   refresh(trpc.notes.list, undefined);

@@ -29,16 +29,15 @@ export interface FormReturn<TSchema extends Schema>
 export function useForm<TSchema extends Schema>({
   schema,
   ...opts
-}: FormOptions<TSchema>) {
+}: FormOptions<TSchema>): FormReturn<TSchema> {
   const form = useVeeForm({
     validationSchema: toTypedSchema(schema),
     ...opts,
-  });
+  }) as any;
 
-  return {
-    ...form,
-    Field,
-  };
+  form.Field = Field;
+
+  return form;
 }
 
 type FieldProps<TName extends string> = InstanceType<typeof Field>["$props"] & {
@@ -55,6 +54,7 @@ interface FieldComponent<TSchema extends Schema> {
       }>
     >
   ): any;
+  _: true;
 }
 
 export function useField() {

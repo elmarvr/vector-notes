@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import type { EmitPayload } from "~/utils/types";
 import type { Note } from "~~/server/utils/drizzle";
+import type NoteForm from "./note-form.vue";
+
+type SubmitPayload = EmitPayload<typeof NoteForm, "submit">[0];
 
 const props = defineProps<{
   note: Note | undefined;
@@ -13,7 +17,7 @@ const trpc = useTrpc();
 
 const { mutate: updateNote } = trpc.notes.update.useMutation();
 
-function onSubmit(values: any) {
+function onSubmit(values: SubmitPayload) {
   updateNote({
     id: props.note!.id,
     ...values,

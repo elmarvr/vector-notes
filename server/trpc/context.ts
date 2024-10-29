@@ -9,7 +9,6 @@ export async function createContext(event: H3Event) {
     session,
     db,
     ai,
-    vectorize: hubVectorize,
   };
 }
 
