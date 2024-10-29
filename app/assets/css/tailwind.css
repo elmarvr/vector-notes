@@ -22,6 +22,12 @@
 }
 
 @layer base {
+  html,
+  body,
+  #__nuxt {
+    @apply h-full;
+  }
+
   body {
     @apply bg-background text-foreground font-body;
   }

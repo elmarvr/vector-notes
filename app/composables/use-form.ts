@@ -1,146 +1,76 @@
 import {
-  useForm as __useForm,
-  FormApi,
-  useField,
-  type DeepKeys,
-  type DeepValue,
-  type FieldState,
-  type FormState,
-  type Validator,
-  getBy,
-} from "@tanstack/vue-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
-import type { InjectionKey, SetupContext, SlotsType } from "vue";
+  useForm as useVeeForm,
+  type FormOptions as VeeFormOptions,
+  Field,
+  type Path,
+  type FieldSlotProps,
+  type PathValue,
+  type FormContext,
+  FieldContextKey,
+  useFieldError,
+} from "vee-validate";
+import { toTypedSchema } from "@vee-validate/zod";
 import { type Schema } from "zod";
+import type { SetupContext, SlotsType } from "vue";
 
-export function useForm<TSchema extends Schema>(opts: {
+export interface FormOptions<TSchema extends Schema>
+  extends Omit<
+    VeeFormOptions<TSchema["_input"], TSchema["_output"]>,
+    "validationSchema"
+  > {
   schema: TSchema;
-  defaultValues?: NoInfer<Partial<TSchema["_output"]>>;
-  onSubmit?: (
-    data: TSchema["_output"],
-    api: FormApi<TSchema["_output"], Validator<unknown, Schema>>
-  ) => void;
-}) {
-  const {
-    Field: _,
-    handleSubmit: _handleSubmit,
-    ...form
-  } = __useForm<TSchema["_output"], Validator<unknown, Schema>>({
-    defaultValues: opts.defaultValues,
-    validatorAdapter: zodValidator(),
-    validators: {
-      onSubmit: opts.schema,
-      onChange: opts.schema,
-    },
-    onSubmit: ({ value, formApi }) => opts.onSubmit?.(value, formApi),
+}
+
+export interface FormReturn<TSchema extends Schema>
+  extends FormContext<TSchema["_input"], TSchema["_output"]> {
+  Field: FieldComponent<TSchema>;
+}
+
+export function useForm<TSchema extends Schema>({
+  schema,
+  ...opts
+}: FormOptions<TSchema>) {
+  const form = useVeeForm({
+    validationSchema: toTypedSchema(schema),
+    ...opts,
   });
-
-  const formState = form.useStore((state) => ({
-    submissionAttempts: state.submissionAttempts,
-  }));
-
-  provide(FormStateKey, formState);
-
-  const FieldComp = defineComponent((props, context) => {
-    return () =>
-      h(
-        Field,
-        {
-          ...props,
-          ...context.attrs,
-          form: form,
-        },
-        context.slots
-      );
-  }) as unknown as FieldComponent<TSchema["_output"]>;
 
   return {
     ...form,
-    Field: FieldComp,
-    handleSubmit: (e: Event) => {
-      e.preventDefault();
-      return _handleSubmit();
-    },
+    Field,
   };
 }
 
-type FieldComponent<TParentData> = {
-  <TName extends DeepKeys<TParentData>>(
-    props: {
-      name: TName;
-    },
+type FieldProps<TName extends string> = InstanceType<typeof Field>["$props"] & {
+  name: TName;
+};
+
+interface FieldComponent<TSchema extends Schema> {
+  <TName extends Path<TSchema["_input"]>>(
+    props: FieldProps<TName>,
     context: SetupContext<
       {},
       SlotsType<{
-        default: {
-          field: {
-            name: TName;
-            onBlur: () => void;
-            value: DeepValue<TParentData, TName>;
-            onInput: (e: any) => void;
-            modelValue: DeepValue<TParentData, TName>;
-            "onUpdate:modelValue": (
-              value: DeepValue<TParentData, TName>
-            ) => void;
-          };
-        };
+        default: FieldSlotProps<PathValue<TSchema["_input"], TName>>;
       }>
     >
   ): any;
-  _: true;
-};
-
-const Field = defineComponent(
-  (_, context: SetupContext) => {
-    const field = useField(context.attrs as never);
-
-    const fieldBinding = reactive({
-      name: context.attrs.name,
-      value: field.api.state.value,
-      onChange: (e: any) => {
-        field.api.handleChange(e.target.value);
-      },
-      onBlur: field.api.handleBlur,
-      modelValue: field.api.state.value,
-      "onUpdate:modelValue": field.api.handleChange,
-    });
-
-    provide(
-      FieldMetaKey,
-      computed(() => field.state.value.meta)
-    );
-
-    return () =>
-      context.slots.default!({
-        field: fieldBinding,
-      });
-  },
-  { name: "Field", inheritAttrs: false }
-);
-
-const FormStateKey: InjectionKey<
-  Ref<Pick<FormState<unknown>, "submissionAttempts">>
-> = Symbol("FormState");
-
-export function useFormState() {
-  const ctx = inject(FormStateKey);
-
-  if (!ctx) {
-    throw new Error("useFormState must be used within a Form component");
-  }
-
-  return ctx;
 }
 
-const FieldMetaKey: InjectionKey<Ref<FieldState<unknown>["meta"]>> =
-  Symbol("FieldMeta");
-
-export function useFieldMeta() {
-  const ctx = inject(FieldMetaKey);
+export function useField() {
+  const ctx = inject(FieldContextKey);
 
   if (!ctx) {
-    throw new Error("useFieldMeta must be used within a Field component");
+    throw new Error("useField must be used within a Field component");
   }
 
-  return ctx;
+  const { name } = ctx;
+  const error = useFieldError(name);
+
+  return {
+    name,
+    error,
+  };
 }
+
+export { useFormContext } from "vee-validate";

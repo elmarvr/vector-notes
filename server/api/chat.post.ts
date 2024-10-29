@@ -21,27 +21,3 @@ export default defineEventHandler(async (event) => {
 
   return sendStream(event, result);
 });
-
-// async function writeAiStream() {
-//   try {
-//     const result = (await hubAI().run("@cf/meta/llama-3.1-8b-instruct", {
-//       prompt,
-//       stream: true,
-//     })) as ReadableStream;
-
-//     for await (const chunk of result) {
-//       const chunkString = new TextDecoder().decode(chunk).slice(6);
-//       await eventStream.push(chunkString);
-//     }
-//   } catch (error) {
-//     consola.error(error);
-
-//     if (error instanceof Error) {
-//       await eventStream.push(JSON.stringify({ error: error.message }));
-//     }
-//   } finally {
-//     await eventStream.close();
-//   }
-// }
-
-// event.waitUntil(writeAiStream());

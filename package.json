@@ -22,6 +22,7 @@
     "@tanstack/vue-form": "^0.34.1",
     "@tanstack/zod-form-adapter": "^0.34.1",
     "@trpc/server": "^10.45.2",
+    "@vee-validate/zod": "^4.14.6",
     "@vueuse/core": "^11.1.0",
     "@vueuse/nuxt": "^11.1.0",
     "@vueuse/router": "^11.1.0",
@@ -35,7 +36,7 @@
     "tailwind-merge": "^2.5.4",
     "trpc-nuxt": "^0.10.22",
     "valibot": "^0.42.1",
-    "vee-validate": "^4.14.3",
+    "vee-validate": "^4.14.6",
     "vue": "^3.5.12",
     "vue-router": "^4.4.5",
     "zod": "^3.23.8"

@@ -9,7 +9,7 @@ const props = defineProps<{
 <template>
   <input
     :class="
-      cx(focusRing(), 'h-9 border rounded px-2 bg-transparent', props.class)
+      cx(focusRing(), 'h-9 border rounded px-2 bg-background', props.class)
     "
   />
 </template>

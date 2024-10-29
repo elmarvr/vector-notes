@@ -8,22 +8,26 @@ const form = useForm({
   schema: z.object({
     content: z.string(),
   }),
-  async onSubmit({ content }) {
-    router.push("/chat");
-    send(content);
-  },
+});
+
+const onSubmit = form.handleSubmit(({ content }, ctx) => {
+  ctx.resetForm();
+  router.push("/chat");
+  send(content);
 });
 </script>
 
 <template>
   <Body>
-    <div>
-      <main class="w-full max-w-3xl mx-auto">
-        <slot />
-      </main>
+    <div class="flex flex-col h-full">
+      <div class="flex-1 min-h-0 overflow-y-auto">
+        <main class="max-w-3xl mx-auto h-full">
+          <slot />
+        </main>
+      </div>
 
-      <div class="w-full fixed bottom-0 p-4">
-        <form class="max-w-3xl mx-auto flex gap-4" @submit="form.handleSubmit">
+      <div class="w-full p-4">
+        <form class="max-w-3xl mx-auto flex gap-4" @submit="onSubmit">
           <form.Field name="content" v-slot="{ field }">
             <UiInput v-bind="field" class="flex-1" />
           </form.Field>
