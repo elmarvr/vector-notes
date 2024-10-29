@@ -21,7 +21,7 @@ defineProps<{
     <UiDropdownMenuContent align="end">
       <UiDropdownMenuItem as-child>
         <a href="/auth/sign-out">
-          <Icon name="ph:sign-out" class="mr-2" />
+          <Icon name="ph:sign-out" class="mr-3" />
           Sign out
         </a>
       </UiDropdownMenuItem>

@@ -15,7 +15,7 @@ interface DropdownMenuContentProps extends RadixDropdownMenuContentProps {
 
 const props = withDefaults(defineProps<DropdownMenuContentProps>(), {
   position: "popper",
-  sideOffset: 4,
+  sideOffset: 8,
 });
 const emit = defineEmits<DropdownMenuContentEmits>();
 

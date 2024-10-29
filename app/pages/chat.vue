@@ -15,11 +15,7 @@ const store = useMessageStore();
       >
         <p>{{ message.content }}</p>
       </div>
-      <div v-else class="py-2">
-        <p>
-          {{ message.content }}
-        </p>
-      </div>
+      <MarkdownContent v-else class="py-2" :content="message.content" />
     </template>
   </div>
 </template>

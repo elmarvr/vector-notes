@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     "nuxt-auth-utils",
     "@pinia/nuxt",
     "nuxt-time",
+    "@nuxtjs/mdc",
   ],
 
   components: [

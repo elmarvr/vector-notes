@@ -16,13 +16,19 @@ export const useMessageStore = defineStore("messages", () => {
 
     const response = fetchAi("/api/chat", messages.value);
 
-    const length = messages.value.push({
-      role: "assistant",
-      content: "",
-    });
-
     for await (const chunk of response) {
-      messages.value[length - 1]!.content += chunk;
+      const lastMessage = messages.value[messages.value.length - 1];
+
+      if (lastMessage?.role === "user") {
+        messages.value.push({
+          role: "assistant",
+          content: chunk,
+        });
+
+        continue;
+      }
+
+      lastMessage!.content += chunk;
     }
   }
 

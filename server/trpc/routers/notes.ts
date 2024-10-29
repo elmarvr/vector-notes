@@ -1,11 +1,13 @@
 import { noteUpdateSchema } from "~~/server/utils/validations";
-import { protectedProcedure, publicProcedure, router } from "../trpc";
+import { protectedProcedure, router } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Note } from "~~/server/utils/drizzle";
 
 export const notesRouter = router({
-  list: publicProcedure.query(async ({ ctx }) => {
-    const notes = await ctx.db.query.notes.findMany();
+  list: protectedProcedure.query(async ({ ctx }) => {
+    const notes = await ctx.db.query.notes.findMany({
+      where: eq(tables.notes.userId, ctx.user.id),
+    });
 
     return notes;
   }),

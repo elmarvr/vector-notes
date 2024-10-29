@@ -30,9 +30,7 @@ async function deleteNote(id: number) {
           {{ note.title }}
         </h3>
 
-        <p class="line-clamp-6">
-          {{ note.content }}
-        </p>
+        <MarkdownContent class="line-clamp-6" :content="note.content" />
 
         <div class="flex-1" />
 

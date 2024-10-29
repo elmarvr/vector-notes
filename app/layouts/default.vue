@@ -63,12 +63,18 @@ const { user } = useUserSession();
       </div>
 
       <div class="w-full py-6">
-        <form class="max-w-3xl mx-auto flex gap-4" @submit="onSubmit">
+        <form class="max-w-3xl mx-auto flex gap-2" @submit="onSubmit">
           <form.Field name="content" v-slot="{ field }">
-            <UiInput v-bind="field" class="flex-1" />
+            <UiInput
+              v-bind="field"
+              class="flex-1"
+              placeholder="Ask a question about your notes"
+            />
           </form.Field>
 
-          <UiButton>Send</UiButton>
+          <UiButton size="icon">
+            <Icon name="ph:paper-plane" class="rotate-45" />
+          </UiButton>
         </form>
       </div>
     </div>
