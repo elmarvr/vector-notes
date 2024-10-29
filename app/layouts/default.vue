@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { z } from "zod";
-
 const router = useRouter();
-const route = useRoute();
 
 const { send } = useMessageStore();
 

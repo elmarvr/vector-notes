@@ -1,0 +1,3 @@
+- Add guest cleanup
+- Add auto scroll
+- Connect vectors to ai chat
