@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "nuxt-time",
     "@nuxtjs/mdc",
+    "nuxt-cron",
   ],
 
   components: [

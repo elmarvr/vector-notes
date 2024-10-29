@@ -18,6 +18,10 @@ export const users = sqliteTable("users", {
     .$default(() => new Date()),
 });
 
+export const userRelations = relations(users, ({ many }) => ({
+  notes: many(notes),
+}));
+
 export const notes = sqliteTable("notes", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("name").notNull(),

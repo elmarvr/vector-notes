@@ -1,24 +1,22 @@
 import { drizzle } from "drizzle-orm/d1";
 
-import { notes, users } from "../database/schema";
+import * as schema from "../database/schema";
 
 export * from "drizzle-orm/expressions";
 
 export const tables = {
-  notes,
-  users,
+  notes: schema.notes,
+  users: schema.users,
 };
 
 export function useDrizzle() {
   return drizzle(hubDatabase(), {
-    schema: {
-      ...tables,
-    },
+    schema,
   });
 }
 
-export type Note = typeof tables.notes.$inferSelect;
-export type NoteInsert = typeof tables.notes.$inferInsert;
+export type Note = typeof schema.notes.$inferSelect;
+export type NoteInsert = typeof schema.notes.$inferInsert;
 
-export type User = typeof tables.users.$inferSelect;
-export type UserInsert = typeof tables.users.$inferInsert;
+export type User = typeof schema.users.$inferSelect;
+export type UserInsert = typeof schema.users.$inferInsert;
