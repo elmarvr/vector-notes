@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "radix-vue/nuxt",
     "nuxt-auth-utils",
     "@pinia/nuxt",
+    "nuxt-time",
   ],
 
   components: [

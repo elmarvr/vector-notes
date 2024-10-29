@@ -16,6 +16,8 @@ const onSubmit = form.handleSubmit(({ content }, ctx) => {
   router.push("/chat");
   send(content);
 });
+
+const { user } = useUserSession();
 </script>
 
 <template>
@@ -25,18 +27,32 @@ const onSubmit = form.handleSubmit(({ content }, ctx) => {
         <div class="max-w-3xl mx-auto flex justify-between items-center">
           <h1 class="text-xl font-bold">Vector notes</h1>
 
-          <UiButton size="sm" variant="ghost" as-child>
-            <NuxtLink
-              :to="{
-                query: {
-                  note: 'create',
-                },
-              }"
+          <div class="flex gap-4 items-center">
+            <UiButton size="sm" variant="ghost" as-child>
+              <NuxtLink
+                :to="{
+                  query: {
+                    note: 'create',
+                  },
+                }"
+              >
+                <Icon name="ph:plus" class="text-primary" />
+                Add note
+              </NuxtLink>
+            </UiButton>
+
+            <UiButton
+              v-if="user?.role === 'guest'"
+              size="sm"
+              variant="ghost"
+              as-child
             >
-              <Icon name="ph:plus" />
-              Add note
-            </NuxtLink>
-          </UiButton>
+              <a href="/auth/github">
+                <Icon name="ph:github-logo" />
+                Sign in
+              </a>
+            </UiButton>
+          </div>
         </div>
       </header>
 
@@ -46,7 +62,7 @@ const onSubmit = form.handleSubmit(({ content }, ctx) => {
         </main>
       </div>
 
-      <div class="w-full p-4">
+      <div class="w-full py-6">
         <form class="max-w-3xl mx-auto flex gap-4" @submit="onSubmit">
           <form.Field name="content" v-slot="{ field }">
             <UiInput v-bind="field" class="flex-1" />

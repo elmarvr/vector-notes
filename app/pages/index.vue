@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { z } from "zod";
+definePageMeta({
+  middleware: ["auth"],
+});
 
 const trpc = useTrpc();
 
@@ -14,28 +16,39 @@ async function deleteNote(id: number) {
 </script>
 
 <template>
-  <div class="flex flex-col">
-    <ul class="grid grid-cols-3 gap-4">
-      <li v-for="note in notes" :key="note.id" class="relative group">
-        <NuxtLink
-          :to="{
-            query: {
-              note: note.id,
-            },
-          }"
-          class="block aspect-square border border-card p-4 rounded min-h-16 hover:bg-muted transition"
-        >
+  <ul class="grid grid-cols-3 gap-4 pt-6">
+    <li v-for="note in notes" :key="note.id" class="relative group">
+      <NuxtLink
+        :to="{
+          query: {
+            note: note.id,
+          },
+        }"
+        class="flex flex-col aspect-square border border-card p-3 rounded min-h-16 hover:bg-muted transition"
+      >
+        <h3 class="text-lg font-semibold pb-1">
+          {{ note.title }}
+        </h3>
+
+        <p class="line-clamp-6">
           {{ note.content }}
-        </NuxtLink>
-        <button
-          class="absolute top-2 right-2 z-20 group-hover:block hidden"
-          @click.stop="deleteNote(note.id)"
-        >
-          <Icon name="ph:trash" class="size-3.5" />
-        </button>
-      </li>
-    </ul>
-  </div>
+        </p>
+
+        <div class="flex-1" />
+
+        <p class="text-sm text-muted-foreground">
+          Last updated at <NuxtTime :datetime="note.updatedAt" />
+        </p>
+      </NuxtLink>
+
+      <button
+        class="absolute top-3 right-3 z-20 group-hover:block hidden"
+        @click.stop="deleteNote(note.id)"
+      >
+        <Icon name="ph:trash" class="size-3.5" />
+      </button>
+    </li>
+  </ul>
 
   <NoteUpdateDialog />
 </template>

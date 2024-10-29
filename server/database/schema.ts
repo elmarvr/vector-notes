@@ -3,9 +3,11 @@ import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  email: text("email").unique().notNull(),
-  name: text("name").notNull(),
-  githubId: text("github_id").unique().notNull(),
+  email: text("email").unique(),
+  name: text("name"),
+  githubId: text("github_id").unique(),
+
+  role: text("role", { enum: ["user", "guest"] }).default("user"),
 
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .notNull()
