@@ -1,2 +1,1 @@
-- Better text area
 - Make it mobile friendly

@@ -20,9 +20,9 @@ async function deleteNote(id: number) {
     <div class="mx-auto max-w-3xl w-full pt-6">
       <div
         v-if="notes?.length === 0"
-        class="inset-0 fixed grid place-items-center"
+        class="inset-0 fixed grid place-items-center pointer-events-none"
       >
-        <p class="text-zinc-300">
+        <p class="text-zinc-300 pointer-events-auto">
           No notes found.
           <NuxtLink
             class="text-foreground hover:underline"
