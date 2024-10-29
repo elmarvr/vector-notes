@@ -14,9 +14,7 @@ export default defineEventHandler(async (event) => {
       .parse(body)
   );
 
-  if (useRuntimeConfig().hub.remote) {
-    await addNotesToMessages(messages);
-  }
+  await addNotesToMessages(messages);
 
   const result = await hubAI().run("@cf/meta/llama-3.1-8b-instruct", {
     messages,

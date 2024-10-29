@@ -7,13 +7,28 @@ const { textarea, input } = useTextareaAutosize({
 
 const props = defineProps<{
   class?: ClassValue;
+  modelValue?: string;
 }>();
+
+const emit = defineEmits<{
+  (event: "update:modelValue", value: string): void;
+}>();
+
+const value = useVModel(props, "modelValue", emit);
+
+syncRef(
+  computed(() => value.value ?? ""),
+  input,
+  {
+    direction: "ltr",
+  }
+);
 </script>
 
 <template>
   <textarea
     ref="textarea"
-    v-model="input"
+    v-model="value"
     :rows="3"
     :class="
       cx(

@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "nuxt-time",
     "@nuxtjs/mdc",
-    "nuxt-cron",
+    // "nuxt-cron",
   ],
 
   components: [
@@ -29,11 +29,6 @@ export default defineNuxtConfig({
 
   devtools: { enabled: true },
 
-  runtimeConfig: {
-    public: {
-      helloText: "Hello from the Edge 👋",
-    },
-  },
   future: { compatibilityVersion: 4 },
   compatibilityDate: "2024-07-30",
   nitro: {

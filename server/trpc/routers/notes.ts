@@ -74,19 +74,13 @@ export const notesRouter = router({
     .mutation(async ({ input, ctx }) => {
       await ctx.db.delete(tables.notes).where(eq(tables.notes.id, input.id));
 
-      if (useRuntimeConfig().hub.remote) {
-        await hubVectorize("notes").deleteByIds([input.id.toString()]);
-      }
+      await hubVectorize("notes").deleteByIds([input.id.toString()]);
 
       return null;
     }),
 });
 
 async function upsertNoteVector(note: Pick<Note, "id" | "content">) {
-  if (!useRuntimeConfig().hub.remote) {
-    return;
-  }
-
   const { data } = await hubAI().run("@cf/baai/bge-base-en-v1.5", {
     text: [note.content],
   });
