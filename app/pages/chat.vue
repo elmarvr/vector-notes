@@ -8,6 +8,10 @@ const containerRef = useTemplateRef("container");
 useAutoScroll(containerRef);
 
 const store = useMessageStore();
+
+if (store.messages.length === 0) {
+  await navigateTo("/");
+}
 </script>
 
 <template>

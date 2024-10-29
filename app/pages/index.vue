@@ -18,7 +18,26 @@ async function deleteNote(id: number) {
 <template>
   <div class="h-full overflow-y-auto">
     <div class="mx-auto max-w-3xl w-full pt-6">
-      <ul class="grid grid-cols-3 gap-4">
+      <div
+        v-if="notes?.length === 0"
+        class="inset-0 fixed grid place-items-center"
+      >
+        <p class="text-zinc-300">
+          No notes found.
+          <NuxtLink
+            class="text-foreground hover:underline"
+            :to="{
+              query: {
+                note: 'create',
+              },
+            }"
+          >
+            Click here to create one.
+          </NuxtLink>
+        </p>
+      </div>
+
+      <ul v-else class="grid grid-cols-3 gap-4">
         <li v-for="note in notes" :key="note.id" class="relative group">
           <NuxtLink
             :to="{

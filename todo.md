@@ -1,2 +1,2 @@
-- No notes state
 - Better text area
+- Make it mobile friendly
