@@ -7,14 +7,16 @@ const { textarea, input } = useTextareaAutosize({
 
 const props = defineProps<{
   class?: ClassValue;
-  modelValue?: string;
+  value?: string;
 }>();
 
 const emit = defineEmits<{
-  (event: "update:modelValue", value: string): void;
+  (event: "change", value: string): void;
 }>();
 
-const value = useVModel(props, "modelValue", emit);
+const value = useVModel(props, "value", emit, {
+  eventName: "change",
+});
 
 syncRef(
   computed(() => value.value ?? ""),
