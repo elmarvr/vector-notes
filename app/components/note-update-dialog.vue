@@ -7,7 +7,17 @@ const search = useNoteSearch();
 const trpc = useTrpc();
 
 const { data: notes } = trpc.notes.list.useQuery();
-const { mutate: updateNote } = trpc.notes.update.useMutation();
+
+const { mutate: updateNote } = withOptimistic(trpc.notes.update, {
+  queries: {
+    notes: [trpc.notes.list, undefined],
+  },
+  onMutate: (store, input) => {
+    const note = store.notes.find((note) => note.id === input.id)!;
+
+    Object.assign(note, input);
+  },
+});
 
 const note = computed(() => {
   return notes.value?.find((note) => note.id === search.note);
@@ -21,15 +31,13 @@ const isOpen = computed({
 });
 
 type SubmitPayload = EmitPayload<typeof NoteForm, "submit">[0];
-function onSubmit(values: SubmitPayload) {
-  updateNote({
-    id: search.note as number,
+async function onSubmit(values: SubmitPayload) {
+  const id = search.note as number;
+  isOpen.value = false;
+  await updateNote({
+    id,
     ...values,
   });
-
-  refresh(trpc.notes.list, undefined);
-
-  isOpen.value = false;
 }
 </script>
 

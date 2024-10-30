@@ -26,13 +26,6 @@ const form = useForm({
   initialValues: props.initialValues,
 });
 
-watch(
-  () => props.initialValues,
-  () => {
-    console.log(props.initialValues);
-  }
-);
-
 const onSubmit = form.handleSubmit((values) => {
   emit("submit", values);
 });

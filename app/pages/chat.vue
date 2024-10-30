@@ -27,7 +27,10 @@ if (store.messages.length === 0) {
           </li>
 
           <li v-else class="py-2">
-            <MarkdownContent :content="message.content" />
+            <MarkdownContent
+              :id="`assitant-${index}`"
+              :content="message.content"
+            />
           </li>
         </template>
       </ul>

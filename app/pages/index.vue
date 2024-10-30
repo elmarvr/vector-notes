@@ -1,18 +1,22 @@
 <script setup lang="ts">
+import type { Note } from "~~/server/utils/drizzle";
+
 definePageMeta({
   middleware: ["auth"],
 });
 
 const trpc = useTrpc();
 
-const { data: notes } = await trpc.notes.list.useQuery();
-const { mutate } = trpc.notes.delete.useMutation();
+const { data: notes } = trpc.notes.list.useQuery();
 
-async function deleteNote(id: number) {
-  await mutate({ id });
-
-  refresh(trpc.notes.list, undefined);
-}
+const { mutate: deleteNote } = withOptimistic(trpc.notes.delete, {
+  queries: {
+    todos: [trpc.notes.list, undefined],
+  },
+  onMutate: (store, input) => {
+    store.todos = store.todos.filter((note: Note) => note.id !== input.id);
+  },
+});
 </script>
 
 <template>
@@ -51,7 +55,11 @@ async function deleteNote(id: number) {
               {{ note.title }}
             </h3>
 
-            <MarkdownContent class="line-clamp-6" :content="note.content" />
+            <MarkdownContent
+              class="line-clamp-6"
+              :id="note.id.toString()"
+              :content="note.content"
+            />
 
             <div class="flex-1" />
 
@@ -62,7 +70,7 @@ async function deleteNote(id: number) {
 
           <button
             class="absolute top-3 right-3 z-20 group-hover:block hidden"
-            @click.stop="deleteNote(note.id)"
+            @click.stop="deleteNote({ id: note.id })"
           >
             <Icon name="ph:trash" class="size-3.5" />
           </button>

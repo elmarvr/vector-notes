@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const id = useId();
 const props = defineProps<{
+  id: string;
   content: string;
   class?: ClassValue;
 }>();
 
 const { data: ast } = await useAsyncData(
-  id,
+  props.id,
   () => parseMarkdown(props.content),
   {
     watch: [() => props.content],

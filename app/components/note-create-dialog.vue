@@ -1,12 +1,26 @@
 <script setup lang="ts">
 import type { EmitPayload } from "~/utils/types";
 import type NoteForm from "./note-form.vue";
-import { z } from "zod";
 
 const search = useNoteSearch();
 const trpc = useTrpc();
 
-const { mutate: createNote } = trpc.notes.create.useMutation();
+const { user } = useUserSession();
+
+const { mutate: createNote } = withOptimistic(trpc.notes.create, {
+  queries: {
+    notes: [trpc.notes.list, undefined],
+  },
+  onMutate: (store, input) => {
+    store.notes.push({
+      ...input,
+      id: new Date().getTime(),
+      userId: user.value?.id!,
+      updatedAt: new Date(),
+      createdAt: new Date(),
+    });
+  },
+});
 
 const isOpen = computed({
   get: () => search.note === "create",
@@ -16,10 +30,9 @@ const isOpen = computed({
 });
 
 type SubmitPayload = EmitPayload<typeof NoteForm, "submit">[0];
-function onSubmit(values: SubmitPayload) {
-  createNote(values);
-  refresh(trpc.notes.list, undefined);
+async function onSubmit(values: SubmitPayload) {
   isOpen.value = false;
+  await createNote(values);
 }
 </script>
 
