@@ -43,6 +43,9 @@ export default defineNuxtConfig({
       notes: {
         dimensions: 768,
         metric: "cosine",
+        metadataIndexes: {
+          userId: "number",
+        },
       },
     },
   },

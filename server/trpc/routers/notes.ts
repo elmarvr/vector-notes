@@ -24,6 +24,7 @@ export const notesRouter = router({
         .returning({
           id: tables.notes.id,
           content: tables.notes.content,
+          userId: tables.notes.userId,
         });
 
       const note = result[0];
@@ -60,6 +61,7 @@ export const notesRouter = router({
           await upsertNoteVector({
             id: input.id,
             content: input.content,
+            userId: ctx.user.id,
           });
         }
       }
@@ -80,7 +82,7 @@ export const notesRouter = router({
     }),
 });
 
-async function upsertNoteVector(note: Pick<Note, "id" | "content">) {
+async function upsertNoteVector(note: Pick<Note, "id" | "content" | "userId">) {
   const { data } = await hubAI().run("@cf/baai/bge-base-en-v1.5", {
     text: [note.content],
   });
@@ -98,6 +100,9 @@ async function upsertNoteVector(note: Pick<Note, "id" | "content">) {
     {
       id: note.id.toString(),
       values: values,
+      metadata: {
+        userId: note.userId,
+      },
     },
   ]);
 }

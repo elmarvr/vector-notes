@@ -1,6 +1,15 @@
 import { z } from "zod";
 
 export default defineEventHandler(async (event) => {
+  const { user } = await getUserSession(event);
+
+  if (!user) {
+    throw createError({
+      status: 401,
+      message: "Unauthorized",
+    });
+  }
+
   const { messages } = await readValidatedBody(event, async (body) =>
     z
       .object({
@@ -14,7 +23,7 @@ export default defineEventHandler(async (event) => {
       .parse(body)
   );
 
-  await addNotesToMessages(messages);
+  await addNotesToMessages(messages, user.id);
 
   const result = await hubAI().run("@cf/meta/llama-3.1-8b-instruct", {
     messages,
@@ -25,7 +34,7 @@ export default defineEventHandler(async (event) => {
   return sendStream(event, result as ReadableStream);
 });
 
-async function addNotesToMessages(messages: any[]) {
+async function addNotesToMessages(messages: any[], userId: number) {
   const query = messages[messages.length - 1].content;
 
   const embeddings = await hubAI().run("@cf/baai/bge-base-en-v1.5", {
@@ -33,7 +42,12 @@ async function addNotesToMessages(messages: any[]) {
   });
   const vectors = embeddings.data[0];
 
-  const vectorQuery = await hubVectorize("notes").query(vectors, { topK: 1 });
+  const vectorQuery = await hubVectorize("notes").query(vectors, {
+    topK: 1,
+    filter: {
+      userId: userId,
+    },
+  });
 
   if (vectorQuery.count === 0) {
     throw createError({
